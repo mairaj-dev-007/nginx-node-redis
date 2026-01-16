@@ -39,8 +39,8 @@ jobs:
 
       - name: Wait for instance startup
         run: |
-          echo "⏳ Waiting 90s for instance and app startup..."
-          sleep 90
+          echo "⏳ Waiting 3-min for instance and app startup..."
+          sleep 180
 
       - name: Fetch Public IP
         id: ec2_ip
