@@ -3,7 +3,7 @@
 provider "aws" {
   region = "us-east-1"
 }
-variable "github_pat" {
+variable "terraform_pat" {
   description = "GitHub Personal Access Token for cloning private repo"
   type        = string
   sensitive   = true
@@ -85,7 +85,7 @@ resource "aws_instance" "web" {
               rm -rf /home/ubuntu/nginx-node-redis
               
               # Clone into the ubuntu user's directory
-              git clone https://${var.github_pat}@github.com/mairaj-dev-007/nginx-node-redis.git
+              git clone https://${var.terraform_pat}@github.com/mairaj-dev-007/nginx-node-redis.git
 
               
               echo "--- Launching App ---"
