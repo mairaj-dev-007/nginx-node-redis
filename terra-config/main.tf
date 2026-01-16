@@ -80,7 +80,7 @@ resource "aws_instance" "web" {
               rm -rf /home/ubuntu/nginx-node-redis
               
               # Clone into the ubuntu user's directory
-              git clone https://github.com/mairaj-dev-007/nginx-node-redis.git /home/ubuntu/nginx-node-redis
+              git clone https://github.com/mairaj-dev-007/nginx-node-redis.git
               
               echo "--- Launching App ---"
               cd /home/ubuntu/nginx-node-redis
