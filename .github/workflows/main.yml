@@ -48,23 +48,12 @@ jobs:
           PUBLIC_IP=$(terraform output -raw public_ip)
           echo "public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
 
-#      - name: Health Check App
-#        run: |
-#          echo "🔍 Checking app at http://${{ steps.ec2_ip.outputs.public_ip }}"
-#          curl -f http://${{ steps.ec2_ip.outputs.public_ip }} || (echo "App not responding" && exit 1)
-
       - name: Health Check App
         run: |
-          for i in {1..20}; do
-           echo "Attempt $i..."
-           if curl -f http://${{ steps.ec2_ip.outputs.public_ip }}; then
-            echo "✅ App is UP"
-            exit 0
-          fi
-          sleep 10
-          done
-          echo "❌ App failed health check"
-          exit 1
+          echo "🔍 Checking app at http://${{ steps.ec2_ip.outputs.public_ip }}:3000"
+          curl -f http://${{ steps.ec2_ip.outputs.public_ip }}:3000
+            
+
 
 
       - name: Keep App Running
