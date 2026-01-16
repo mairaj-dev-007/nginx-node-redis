@@ -68,30 +68,14 @@ resource "aws_instance" "web" {
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   user_data = <<-EOF
-              #!/bin/bash
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-
-echo "--- System Update ---"
-apt-get update -y
-apt-get install -y docker.io git
-
-# Install docker-compose v2
-apt-get install -y docker-compose-plugin
-
-echo "--- Start Docker ---"
-systemctl start docker
-systemctl enable docker
-sleep 10
-
-echo "--- Cloning App ---"
-rm -rf /home/ubuntu/nginx-node-redis
-sudo -u ubuntu git clone https://${var.terraform_pat}@github.com/mairaj-dev-007/nginx-node-redis.git /home/ubuntu/nginx-node-redis
-
-echo "--- Launching App ---"
-cd /home/ubuntu/nginx-node-redis
-docker compose up -d --build
-
-echo "--- Script Finished ---"
+#!/bin/bash
+              apt-get update -y
+              apt-get install -y docker.io docker-compose git
+              systemctl start docker
+              systemctl enable docker
+              git clone https://github.com/mairaj-dev-007/nginx-node-redis.git 
+              cd nginx-node-redis/
+              docker-compose up -d --build
 
               EOF
 

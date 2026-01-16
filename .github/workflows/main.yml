@@ -17,7 +17,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-east-1
-      TF_VAR_terraform_pat: ${{ secrets.TERRAFORM_PAT }}
+    #  TF_VAR_terraform_pat: ${{ secrets.TERRAFORM_PAT }}
 
     steps:
       - name: Checkout code
@@ -26,21 +26,18 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        run: terraform init
-
       - name: Terraform Validate
         run: terraform validate
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
- 
+
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
 
       - name: Wait for instance startup
         run: |
-          echo "⏳ Waiting 3-min for instance and app startup..."
+          echo "⏳ Waiting 2-min for instance and app startup..."
           sleep 120
 
       - name: Fetch Public IP
@@ -59,9 +56,9 @@ jobs:
 
       - name: Keep App Running
         run: |
-          echo "⏳ Keeping app alive for 10 minutes...."
+          echo "⏳ Keeping app alive for 7 minutes...."
           echo "Application is running at: http://${{ steps.ec2_ip.outputs.public_ip }}"
-          sleep 600
+          sleep 420
 
       - name: Terraform Destroy
         if: always()
