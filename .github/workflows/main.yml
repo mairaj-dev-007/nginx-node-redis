@@ -55,7 +55,7 @@ jobs:
 
       - name: Keep App Running
         run: |
-          echo "⏳ Keeping app alive for 5 minutes..."
+          echo "⏳ Keeping app alive for 5 minutes...."
           echo "Application is running at: http://${{ steps.ec2_ip.outputs.public_ip }}"
           sleep 300
 
