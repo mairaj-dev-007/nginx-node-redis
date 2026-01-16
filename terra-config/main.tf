@@ -57,13 +57,31 @@ resource "aws_instance" "web" {
 
   user_data = <<-EOF
               #!/bin/bash
+              # 1. Log everything so we can see what happened if it fails
+              exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+
+              echo "--- System Update ---"
               apt-get update -y
               apt-get install -y docker.io docker-compose git
+
+              # 2. Start Docker service
               systemctl start docker
               systemctl enable docker
-              git clone https://github.com/mairaj-dev-007/nginx-node-redis.git
-              cd nginx-node-redis/
-              docker-compose up -d --build
+
+              echo "--- Cloning App ---"
+              # Delete folder if it exists (prevents git clone failure on retries)
+              rm -rf /home/ubuntu/nginx-node-redis
+              
+              # Clone into the ubuntu user's directory
+              git clone https://github.com/mairaj-dev-007/nginx-node-redis.git /home/ubuntu/nginx-node-redis
+              
+              echo "--- Launching App ---"
+              cd /home/ubuntu/nginx-node-redis
+
+              # 3. Use absolute path for docker-compose and run in background
+              /usr/bin/docker-compose up -d --build
+
+              echo "--- Script Finished ---"
               EOF
 
   tags = {
