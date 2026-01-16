@@ -40,8 +40,8 @@ jobs:
 
       - name: Wait for instance startup
         run: |
-          echo "⏳ Waiting 2-min for instance and app startup..."
-          sleep 120
+          echo "⏳ Waiting 1-min for instance and app startup..."
+          sleep 60
 
       - name: Fetch Public IP
         id: ec2_ip
@@ -61,7 +61,7 @@ jobs:
         run: |
           echo "⏳ Keeping app alive for 7 minutes...."
           echo "Application is running at: http://${{ steps.ec2_ip.outputs.public_ip }}"
-          sleep 420
+          sleep 900
 
       - name: Terraform Destroy
         if: always()
