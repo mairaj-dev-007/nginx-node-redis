@@ -69,32 +69,30 @@ resource "aws_instance" "web" {
 
   user_data = <<-EOF
               #!/bin/bash
-              # 1. Log everything so we can see what happened if it fails
-              exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-              echo "--- System Update ---"
-              apt-get update -y
-              apt-get install -y docker.io docker-compose git
+echo "--- System Update ---"
+apt-get update -y
+apt-get install -y docker.io git
 
-              # 2. Start Docker service
-              systemctl start docker
-              systemctl enable docker
+# Install docker-compose v2
+apt-get install -y docker-compose-plugin
 
-              echo "--- Cloning App ---"
-              # Delete folder if it exists (prevents git clone failure on retries)
-              rm -rf /home/ubuntu/nginx-node-redis
-              
-              # Clone into the ubuntu user's directory
-              git clone https://${var.terraform_pat}@github.com/mairaj-dev-007/nginx-node-redis.git
+echo "--- Start Docker ---"
+systemctl start docker
+systemctl enable docker
+sleep 10
 
-              
-              echo "--- Launching App ---"
-              cd /home/ubuntu/nginx-node-redis
+echo "--- Cloning App ---"
+rm -rf /home/ubuntu/nginx-node-redis
+sudo -u ubuntu git clone https://${var.terraform_pat}@github.com/mairaj-dev-007/nginx-node-redis.git /home/ubuntu/nginx-node-redis
 
-              # 3. Use absolute path for docker-compose and run in background
-              /usr/bin/docker-compose up -d --build
+echo "--- Launching App ---"
+cd /home/ubuntu/nginx-node-redis
+docker compose up -d --build
 
-              echo "--- Script Finished ---"
+echo "--- Script Finished ---"
+
               EOF
 
   tags = {
