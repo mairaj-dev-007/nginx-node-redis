@@ -17,7 +17,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: us-east-1
-      TERRAFORM_PAT: ${{ secrets.TERRAFORM_PAT }}
+      TF_VAR_terraform_pat: ${{ secrets.TERRAFORM_PAT }}
 
     steps:
       - name: Checkout code
@@ -33,7 +33,9 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform apply -var "terraform_pat=${{ secrets.TERRAFORM_PAT }}" -auto-approve tfplan
+
+
 
       - name: Terraform Apply
         run: terraform apply -auto-approve tfplan
