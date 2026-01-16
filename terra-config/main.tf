@@ -1,13 +1,6 @@
-#the main IAC
-
 provider "aws" {
   region = "us-east-1"
 }
-#variable "terraform_pat" {
-#  description = "GitHub Personal Access Token for cloning private repo"
-#  type        = string
-#  sensitive   = true
-#}
 
 resource "aws_security_group" "web_sg" {
   name        = "nginx-web-sg"
@@ -28,13 +21,6 @@ resource "aws_security_group" "web_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-  from_port   = 3000
-  to_port     = 3000
-  protocol    = "tcp"
-  cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -49,7 +35,7 @@ data "aws_vpc" "default" {
 
 data "aws_ami" "ubuntu" {
     most_recent = true
-    owners = ["099720109477"]
+    owners = ["amazon"]
   
       filter {
         name   = "name"
@@ -64,46 +50,18 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_instance" "web" {
   ami           = data.aws_ami.ubuntu.id
-  instance_type = "t3.micro"
+  instance_type = "t2.micro"
   vpc_security_group_ids = [aws_security_group.web_sg.id]
 
   user_data = <<-EOF
-#!/bin/bash
-# Log everything for debugging
-exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
-
-echo "--- System Update ---"
-apt-get update -y
-
-echo "--- Installing Docker and dependencies ---"
-apt-get install -y docker.io git curl
-
-# Remove old docker-compose if exists
-apt-get remove -y docker-compose || true
-
-# Install Docker Compose v2 plugin
-mkdir -p ~/.docker/cli-plugins
-curl -SL https://github.com/docker/compose/releases/download/v2.23.1/docker-compose-linux-x86_64 -o ~/.docker/cli-plugins/docker-compose
-chmod +x ~/.docker/cli-plugins/docker-compose
-
-# Start and enable Docker
-systemctl start docker
-systemctl enable docker
-
-echo "--- Cloning App ---"
-rm -rf /home/ubuntu/nginx-node-redis
-
-# Clone your public repo
-git clone https://github.com/mairaj-dev-007/nginx-node-redis.git /home/ubuntu/nginx-node-redis
-
-cd /home/ubuntu/nginx-node-redis
-
-echo "--- Launching App with Docker Compose v2 ---"
-/usr/bin/docker compose up -d --build
-
-echo "--- Script Finished ---"
-
-
+              #!/bin/bash
+              apt-get update -y
+              apt-get install -y docker.io docker-compose git
+              systemctl start docker
+              systemctl enable docker
+              git clone https://github.com/mairaj-dev-007/nginx-node-redis.git 
+              cd nginx-node-redis/
+              docker-compose up -d --build
               EOF
 
   tags = {
