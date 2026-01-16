@@ -20,5 +20,7 @@ services:
     ports:
     - '80:80'
     depends_on:
-    - web1
-    - web2
+      web1:
+        condition: service_healthy
+      web2:
+        condition: service_healthy
