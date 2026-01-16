@@ -3,11 +3,11 @@
 provider "aws" {
   region = "us-east-1"
 }
-variable "terraform_pat" {
-  description = "GitHub Personal Access Token for cloning private repo"
-  type        = string
-  sensitive   = true
-}
+#variable "terraform_pat" {
+#  description = "GitHub Personal Access Token for cloning private repo"
+#  type        = string
+#  sensitive   = true
+#}
 
 resource "aws_security_group" "web_sg" {
   name        = "nginx-web-sg"
